@@ -18,28 +18,91 @@ fn main() -> io::Result<()> {
     let mut trk = io::stdout();
     trk.execute(terminal::Clear(terminal::ClearType::All))?;
 
-
-    let draw = Rect {
-        s_pnt: Point {
-            x: 8,
-            y: 4
-        },
-        e_pnt: Point {
-            x: 48,
-            y: 24
-        }
-    };
-
-
-    match paint_rect(&mut trk, '█'.yellow(), draw) {
+    match draw_pot(&mut trk, 32, 4, 20) {
         Err(e) => {println!("{:?}", e)},
         _ => {}
-    }
-    trk.flush()?;
+    };
+    let _ = trk.flush();
+
     Ok(())
 }
 
 
+
+fn draw_pot(trk: &mut Stdout, size: u16, margin: u16, mut elevation: u16) -> Result<()> {
+    let potMat: StyledContent<char> = '='.red();
+    let mut shift: u16 = 2;
+    let draw = Rect {
+        s_pnt: Point {
+            x: margin,
+            y: elevation
+        },
+        e_pnt: Point {
+            x: margin + size + shift,
+            y: elevation + 1
+        }
+    };
+    
+
+
+
+    paint_rect(trk, potMat, draw)?;
+    elevation += 1;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    elevation += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    elevation += 1;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    elevation += 1;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    elevation += 1;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+    shift += 1;
+
+    paint_tile(trk, potMat, Point{x:margin + shift, y:elevation})?;
+    paint_tile(trk, potMat, Point{x:(margin + size - shift + 1), y:elevation})?;
+
+
+    elevation -= 1;
+    shift += 1;
+    
+    paint_rect(trk, potMat, Rect {
+        s_pnt: Point {
+            x: margin + shift,
+            y: elevation
+        },
+        e_pnt: Point {
+            x: margin + size - shift + 2,
+            y: elevation + 1
+        }
+    })?;
+
+
+    Ok(())
+
+}
 
 
 fn paint_tile(trk: &mut Stdout, token: StyledContent<char>, pnt: Point) -> Result<()> {
