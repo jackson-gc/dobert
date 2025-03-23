@@ -3,22 +3,38 @@ use crossterm::{
     ExecutableCommand, QueueableCommand,
     terminal, cursor, style::{self, Stylize, StyledContent}
 };
+use serde::{Deserialize, Serialize};
+use serde_json::to_string;
 
+#[derive(Serialize, Deserialize)]
 struct Point {
-    x: u16,
+   x: u16,
     y: u16
 }
 
+
+#[derive(Serialize, Deserialize)]
 struct Rect {
     s_pnt: Point,
     e_pnt: Point
 }
 
+
+
+
 fn main() -> io::Result<()> {
+    
+
+    let point01 = Point{x: 12, y: 12};
+
+    
+
+    return Ok(());
+
     let mut trk = io::stdout();
     trk.execute(terminal::Clear(terminal::ClearType::All))?;
 
-    match draw_pot(&mut trk, 32, 4, 20) {
+    match draw_pot(&mut trk, 32, 40, 20) {
         Err(e) => {println!("{:?}", e)},
         _ => {}
     };
@@ -42,9 +58,6 @@ fn draw_pot(trk: &mut Stdout, size: u16, margin: u16, mut elevation: u16) -> Res
             y: elevation + 1
         }
     };
-    
-
-
 
     paint_rect(trk, potMat, draw)?;
     elevation += 1;
