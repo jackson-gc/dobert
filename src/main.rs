@@ -26,8 +26,14 @@ fn main() -> io::Result<()> {
     
 
     let point01 = Point{x: 12, y: 12};
-
+    let point_ser = to_string(&point01);
     
+    if point_ser.is_ok() {
+        println!("{}", point_ser.ok().unwrap());
+    } else {
+        println!("{:#?}", point_ser.err());
+    }
+
 
     return Ok(());
 
