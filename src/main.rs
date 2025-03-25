@@ -1,14 +1,16 @@
 use std::io::{self, Write, Stdout, Result};
 use crossterm::{
     ExecutableCommand, QueueableCommand,
-    terminal, cursor, style::{self, Stylize, StyledContent}
+    terminal::{self, size, WindowSize},
+    cursor, 
+    style::{self, Stylize, StyledContent, Color},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 
 #[derive(Serialize, Deserialize)]
 struct Point {
-   x: u16,
+    x: u16,
     y: u16
 }
 
@@ -19,28 +21,15 @@ struct Rect {
     e_pnt: Point
 }
 
-
+const MIN_WINDOW_SIZE: u16 = 32;
 
 
 fn main() -> io::Result<()> {
-    
-
-    let point01 = Point{x: 12, y: 12};
-    let point_ser = to_string(&point01);
-    
-    if point_ser.is_ok() {
-        println!("{}", point_ser.ok().unwrap());
-    } else {
-        println!("{:#?}", point_ser.err());
-    }
-
-
-    return Ok(());
-
     let mut trk = io::stdout();
     trk.execute(terminal::Clear(terminal::ClearType::All))?;
+    
 
-    match draw_pot(&mut trk, 32, 40, 20) {
+    match draw_pot(&mut trk, 20) {
         Err(e) => {println!("{:?}", e)},
         _ => {}
     };
@@ -51,8 +40,22 @@ fn main() -> io::Result<()> {
 
 
 
-fn draw_pot(trk: &mut Stdout, size: u16, margin: u16, mut elevation: u16) -> Result<()> {
-    let potMat: StyledContent<char> = '='.red();
+fn draw_pot(trk: &mut Stdout, mut elevation: u16) -> Result<()> {
+    let window_size: u16 = size()?.0;
+    
+    if window_size < MIN_WINDOW_SIZE {
+        return Ok(());
+    }
+
+    
+    let margin: u16 = window_size % 16;
+    let size: u16 = window_size - MIN_WINDOW_SIZE - (margin * 2);
+    println!("size: {:?}, margin: {:?}", size, margin);
+    
+
+    let clr: Color = Color::Rgb{r: 160, g: 130, b: 90};
+
+    let potMat: StyledContent<char> = '█'.with(clr);
     let mut shift: u16 = 2;
     let draw = Rect {
         s_pnt: Point {
