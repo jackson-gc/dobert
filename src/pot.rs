@@ -1,4 +1,4 @@
-use std::io::{Stdout, Result};
+use std::io::{Stdout, Result, Error, ErrorKind};
 use crossterm::{
     terminal::size,
     style::{Stylize, StyledContent, Color},
@@ -7,15 +7,20 @@ use crate::utils::draw_utils::{Point, Rect, Shifter, paint_rect, paint_outline, 
 
 
 pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
-    let window_width: u16 = size()?.0;
-    let window_length: u16 = size()?.1;
+    let (window_width, window_length) = size()?;
 
     if window_width < MIN_WINDOW_WIDTH {
-        panic!("Window width is too small (must be >{})", MIN_WINDOW_WIDTH);
+        return Err(Error::new(
+            ErrorKind::Other, 
+            format!("Window width is too small (must be >{})", MIN_WINDOW_WIDTH)
+        ));
     }
 
     if window_length < MIN_WINDOW_LENGTH {
-        panic!("Winow length is too small (must be >{})", MIN_WINDOW_LENGTH);
+        return Err(Error::new(
+            ErrorKind::Other, 
+            format!("Window length is too small (must be >{})", MIN_WINDOW_LENGTH)
+        ));
     }
 
     let start_index: u16 = window_width - MIN_WINDOW_WIDTH;

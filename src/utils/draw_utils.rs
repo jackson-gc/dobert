@@ -2,32 +2,24 @@ pub use std::io::{Stdout, Result};
 pub use crossterm::{
     QueueableCommand,
     cursor, 
-    style::{self,StyledContent},
+    style::{self, StyledContent},
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Point {
     pub x: u16,
     pub y: u16
 }
 
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        Point {
-            x: self.x,
-            y: self.y,
-        }
-    }
-}
-
+#[derive(Clone)]
 pub struct Shifter {
     pub gap: u16,
     pub x_shift: u16,
     pub y_shift: u16
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Rect {
     pub s_pnt: Point,
     pub e_pnt: Point
@@ -70,4 +62,3 @@ pub fn paint_rect(trk: &mut Stdout, token: StyledContent<char>, rect: Rect) -> R
     }
     Ok(())
 }
-
