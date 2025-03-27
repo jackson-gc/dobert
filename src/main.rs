@@ -13,6 +13,15 @@ struct Point {
     y: u16
 }
 
+impl Clone for Point {
+    fn clone(&self) -> Self {
+        Point {
+            x: self.x,
+            y: self.y,
+        }
+    }
+}
+
 struct Shifter {
     gap: u16,
     x_shift: u16,
@@ -27,6 +36,7 @@ struct Rect {
 
 const MIN_WINDOW_WIDTH: u16 = 32;
 const MIN_WINDOW_LENGTH: u16 = 32;
+const LIP_SIZE: u16 = 3;
 
 
 fn main() -> io::Result<()> {
@@ -55,9 +65,9 @@ fn draw_pot(trk: &mut Stdout) -> Result<()> {
 
     let start_index: u16 = window_width - MIN_WINDOW_WIDTH;
     let margin: u16 = start_index / 4;
-    let size: u16 = window_width - (margin * 2);
-    let pot_depth: u16 = window_length / 4;
-    let mut depth: u16 = window_length - pot_depth;
+    let size: u16 = window_width - margin * 2;
+    let pot_depth: u16 = window_length / 8;
+    let depth: u16 = window_length - pot_depth;
 
     let clr: Color = Color::Rgb{r: 160, g: 130, b: 90};
     let pot_hard_mat: StyledContent<char> = '█'.with(clr);
@@ -74,12 +84,12 @@ fn draw_pot(trk: &mut Stdout) -> Result<()> {
     })?;
 
     let mut draw_pnt = Point {
-        x: margin + (margin / 4),
+        x: margin + LIP_SIZE,
         y: depth
     };
 
     let mut draw_shift = Shifter {
-        gap: size - (margin / 2), 
+        gap: size - ((margin / 4) + LIP_SIZE * 2), 
         x_shift: 1, 
         y_shift: 1
     };
@@ -91,9 +101,19 @@ fn draw_pot(trk: &mut Stdout) -> Result<()> {
             draw_shift.x_shift = 1;
         }
 
+        if i == pot_depth - pot_depth / 4 {
+            let end_width = draw_pnt.x + draw_shift.gap;
+
+            paint_rect(trk, pot_hard_mat, Rect {
+                s_pnt: draw_pnt.clone(),
+                e_pnt: Point {
+                    x: end_width,
+                    y: draw_pnt.y + 1
+                }
+            })?;
+        }
         paint_outline(trk, pot_hard_mat, &mut draw_pnt, &mut draw_shift)?;
     }
-
 
     let end_width: u16 = draw_pnt.x + draw_shift.gap + 1;
     let end_length: u16 = draw_pnt.y;
@@ -101,9 +121,9 @@ fn draw_pot(trk: &mut Stdout) -> Result<()> {
         s_pnt: draw_pnt,
         e_pnt: Point {
             x: end_width,
-            y: end_width
+            y: end_length
         }
-    });
+    })?;
 
     Ok(())
 
