@@ -1,17 +1,15 @@
-use std::io::{self, Write, Stdout, Result};
-use crossterm::{
-    ExecutableCommand, QueueableCommand,
-    terminal::{self, size, WindowSize},
+pub use std::io::{Stdout, Result};
+pub use crossterm::{
+    QueueableCommand,
     cursor, 
-    style::{self, Stylize, StyledContent, Color},
+    style::{self,StyledContent},
 };
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Serialize, Deserialize)]
-struct Point {
-    x: u16,
-    y: u16
+pub struct Point {
+    pub x: u16,
+    pub y: u16
 }
 
 impl Clone for Point {
@@ -23,24 +21,24 @@ impl Clone for Point {
     }
 }
 
-struct Shifter {
-    gap: u16,
-    x_shift: u16,
-    y_shift: u16
+pub struct Shifter {
+    pub gap: u16,
+    pub x_shift: u16,
+    pub y_shift: u16
 }
 
 #[derive(Serialize, Deserialize)]
-struct Rect {
-    s_pnt: Point,
-    e_pnt: Point
+pub struct Rect {
+    pub s_pnt: Point,
+    pub e_pnt: Point
 }
 
-const MIN_WINDOW_WIDTH: u16 = 32;
-const MIN_WINDOW_LENGTH: u16 = 32;
-const LIP_SIZE: u16 = 3;
+pub const MIN_WINDOW_WIDTH: u16 = 32;
+pub const MIN_WINDOW_LENGTH: u16 = 32;
+pub const LIP_SIZE: u16 = 3;
 
 
-fn paint_outline(trk: &mut Stdout, token: StyledContent<char>, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
+pub fn paint_outline(trk: &mut Stdout, token: StyledContent<char>, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
     paint_tile(trk, token, Point {
         x: pnt.x,
         y: pnt.y
@@ -58,13 +56,13 @@ fn paint_outline(trk: &mut Stdout, token: StyledContent<char>, pnt: &mut Point, 
     Ok(())
 }
 
-fn paint_tile(trk: &mut Stdout, token: StyledContent<char>, pnt: Point) -> Result<()> {
+pub fn paint_tile(trk: &mut Stdout, token: StyledContent<char>, pnt: Point) -> Result<()> {
     trk.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
     Ok(())
 }
 
 
-fn paint_rect(trk: &mut Stdout, token: StyledContent<char>, rect: Rect) -> Result<()> {
+pub fn paint_rect(trk: &mut Stdout, token: StyledContent<char>, rect: Rect) -> Result<()> {
     for y in rect.s_pnt.y..rect.e_pnt.y {
         for x in rect.s_pnt.x..rect.e_pnt.x {
             paint_tile(trk, token, Point{x,y})?;

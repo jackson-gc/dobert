@@ -1,8 +1,12 @@
+use std::io::{Stdout, Result};
+use crossterm::{
+    terminal::size,
+    style::{Stylize, StyledContent, Color},
+};
+use crate::utils::draw_utils::{Point, Rect, Shifter, paint_rect, paint_outline, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
 
 
-
-
-fn draw_pot(trk: &mut Stdout) -> Result<()> {
+pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
     let window_width: u16 = size()?.0;
     let window_length: u16 = size()?.1;
 

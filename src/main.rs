@@ -1,7 +1,8 @@
+mod pot;
+mod utils;
 
-
-
-
+use std::io;
+use crossterm::{ExecutableCommand, terminal};
 
 fn main() -> io::Result<()> {
     let mut trk = io::stdout();
