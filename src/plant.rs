@@ -1,15 +1,17 @@
-use std::io::{Stdout, Result};
-use crossterm::{
-    QueueableCommand,
-    cursor, 
-    style::{self, StyledContent},
-};
+use std::io::{Result, Stdout};
 use rand::{Rng, SeedableRng};
-use rand_chacha::ChaCha12Rng;
-use crate::utils::draw_utils::{Point, Rect, Shifter, paint_rect, paint_outline, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
+use rand_chacha::ChaCha8Rng;
 
-pub fn plant(seed: u64) -> Result<()>{
-    let mut rng = ChaCha12Rng::seed_from_u64(seed);
+use crate::utils::draw_utils::{get_window_ctx, paint_tile};
+
+pub fn plant(trk: &mut Stdout, seed: u64) -> Result<()>{
+    let window_size = get_window_ctx();
+    let mut rng = ChaCha8Rng::seed_from_u64(seed);
     
+    let point: u16 = rng.random_range(1..window_size.0);
+    
+    println!("{}/{}", point, window_size.0);
+
+
     Ok(()) 
 }

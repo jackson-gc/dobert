@@ -1,13 +1,10 @@
 use std::io::{Stdout, Result, Error, ErrorKind};
-use crossterm::{
-    terminal::size,
-    style::{Stylize, StyledContent, Color},
-};
-use crate::utils::draw_utils::{Point, Rect, Shifter, paint_rect, paint_outline, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
+use crossterm::style::{Stylize, StyledContent, Color};
+use crate::utils::draw_utils::{Point, Rect, Shifter, get_window_ctx, paint_rect, paint_outline, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
 
 
 pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
-    let (window_width, window_length) = size()?;
+    let (window_width, window_length) = get_window_ctx();
 
     if window_width < MIN_WINDOW_WIDTH {
         return Err(Error::new(
@@ -49,7 +46,7 @@ pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
     };
 
     let mut draw_shift = Shifter {
-        gap: size - ((margin / 4) + LIP_SIZE * 2), 
+        gap: size - (LIP_SIZE * 2 + 1), 
         x_shift: 1, 
         y_shift: 1
     };

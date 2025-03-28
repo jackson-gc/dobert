@@ -28,9 +28,12 @@ fn main() -> io::Result<()> {
     }
 
     // 8-digit rng
-    let seed: u64 = rand::thread_rng().gen_range(10_000_000..100_000_000);
+    let seed: u64 = rand::rng().random_range(10_000_000..100_000_000);
     plant_info.seed = seed;
-
+    
+    if let Err(e) = plant(&mut trk, plant_info.seed) {
+        println!("{:?}", e);
+    }
 
     trk.flush()?;   
     Ok(())
