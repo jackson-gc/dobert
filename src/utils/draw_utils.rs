@@ -2,6 +2,7 @@ pub use std::io::{Stdout, Result};
 pub use crossterm::{
     QueueableCommand,
     cursor, 
+    terminal::{self, size},
     style::{self, StyledContent},
 };
 use serde::{Deserialize, Serialize};
@@ -28,6 +29,14 @@ pub struct Rect {
 pub const MIN_WINDOW_WIDTH: u16 = 32;
 pub const MIN_WINDOW_LENGTH: u16 = 32;
 pub const LIP_SIZE: u16 = 3;
+
+pub fn get_window_ctx() -> (u16, u16) {
+    let (width, length) = match size(){
+        Ok((w,l)) => (w,l),
+        _ => (0,0)
+    };
+    return (width, length);
+}
 
 
 pub fn paint_outline(trk: &mut Stdout, token: StyledContent<char>, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {

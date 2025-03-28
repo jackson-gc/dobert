@@ -12,7 +12,7 @@ use crate::plant::plant;
 
 #[derive(Serialize, Deserialize)]
 pub struct PlantInfo {
-    seed: u32, 
+    seed: u64, 
 }
 
 fn main() -> io::Result<()> {
@@ -28,15 +28,10 @@ fn main() -> io::Result<()> {
     }
 
     // 8-digit rng
-    let seed: u32 = rand::thread_rng().gen_range(10_000_000..100_000_000);
+    let seed: u64 = rand::thread_rng().gen_range(10_000_000..100_000_000);
     plant_info.seed = seed;
 
 
-    println!("{}", seed);
-    
-    
-
-    
     trk.flush()?;   
     Ok(())
 }

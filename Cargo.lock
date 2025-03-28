@@ -52,6 +52,7 @@ version = "0.1.0"
 dependencies = [
  "crossterm",
  "rand",
+ "rand_chacha",
  "serde",
  "serde_json",
 ]
