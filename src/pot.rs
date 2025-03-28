@@ -1,10 +1,9 @@
-use std::io::{Stdout, Result, Error, ErrorKind};
+use std::io::{Result, Error, ErrorKind};
 use crossterm::style::{Stylize, StyledContent, Color};
-use crate::utils::draw_utils::{Point, Rect, Shifter, get_window_ctx, paint_rect, paint_outline, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
+use crate::utils::draw_utils::{Token, Point, Rect, Shifter, Renderer, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
 
-
-pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
-    let (window_width, window_length) = get_window_ctx();
+pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
+    let (window_width, window_length) = renderer.get_window_ctx();
 
     if window_width < MIN_WINDOW_WIDTH {
         return Err(Error::new(
@@ -27,9 +26,9 @@ pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
     let depth: u16 = window_length - pot_depth;
 
     let clr: Color = Color::Rgb{r: 160, g: 130, b: 90};
-    let pot_hard_mat: StyledContent<char> = '█'.with(clr);
+    let pot_hard_mat: Token = '█'.with(clr);
 
-    paint_rect(trk, pot_hard_mat, Rect {
+    renderer.paint_rect(pot_hard_mat, Rect {
         s_pnt: Point {
             x: margin,
             y: depth
@@ -61,7 +60,7 @@ pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
         if i == pot_depth - pot_depth / 4 {
             let end_width = draw_pnt.x + draw_shift.gap;
 
-            paint_rect(trk, pot_hard_mat, Rect {
+            renderer.paint_rect(pot_hard_mat, Rect {
                 s_pnt: draw_pnt.clone(),
                 e_pnt: Point {
                     x: end_width,
@@ -69,12 +68,12 @@ pub fn draw_pot(trk: &mut Stdout) -> Result<()> {
                 }
             })?;
         }
-        paint_outline(trk, pot_hard_mat, &mut draw_pnt, &mut draw_shift)?;
+        renderer.paint_outline(pot_hard_mat, &mut draw_pnt, &mut draw_shift)?;
     }
 
     let end_width: u16 = draw_pnt.x + draw_shift.gap + 1;
     let end_length: u16 = draw_pnt.y;
-    paint_rect(trk, pot_hard_mat, Rect {
+    renderer.paint_rect(pot_hard_mat, Rect {
         s_pnt: draw_pnt,
         e_pnt: Point {
             x: end_width,

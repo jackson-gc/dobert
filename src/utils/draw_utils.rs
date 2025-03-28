@@ -1,11 +1,13 @@
-pub use std::io::{Stdout, Result};
-pub use crossterm::{
+use std::io::{self, Stdout, Result, Write};
+use crossterm::{
     QueueableCommand,
     cursor, 
     terminal::size,
     style::{self, StyledContent},
 };
 use serde::{Deserialize, Serialize};
+    
+pub type Token = StyledContent<char>;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Point {
@@ -30,43 +32,63 @@ pub const MIN_WINDOW_WIDTH: u16 = 32;
 pub const MIN_WINDOW_LENGTH: u16 = 32;
 pub const LIP_SIZE: u16 = 3;
 
-pub fn get_window_ctx() -> (u16, u16) {
-    match size() {
-        Ok((w,l)) => (w,l),
-        _ => (0,0)
-    }
+pub struct Renderer {
+    stdout: Stdout,
 }
 
+impl Renderer {
 
-pub fn paint_outline(trk: &mut Stdout, token: StyledContent<char>, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
-    paint_tile(trk, token, Point {
-        x: pnt.x,
-        y: pnt.y
-    })?;
-    
-    paint_tile(trk, token, Point {
-        x: pnt.x + shift.gap,
-        y: pnt.y
-    })?;
-    
-    pnt.x += shift.x_shift;
-    pnt.y += shift.y_shift;
-    shift.gap -= shift.x_shift * 2;
-
-    Ok(())
-}
-
-pub fn paint_tile(trk: &mut Stdout, token: StyledContent<char>, pnt: Point) -> Result<()> {
-    trk.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
-    Ok(())
-}
-
-
-pub fn paint_rect(trk: &mut Stdout, token: StyledContent<char>, rect: Rect) -> Result<()> {
-    for y in rect.s_pnt.y..rect.e_pnt.y {
-        for x in rect.s_pnt.x..rect.e_pnt.x {
-            paint_tile(trk, token, Point{x,y})?;
+    pub fn new() -> Self {
+        Renderer {
+            stdout: io::stdout(),
         }
     }
-    Ok(())
+
+    pub fn stdout_mut(&mut self) -> &mut Stdout {
+        &mut self.stdout
+    }
+
+    pub fn get_window_ctx(&self) -> (u16, u16) {
+        match size() {
+            Ok((w,l)) => (w,l),
+            _ => (0,0)
+        }
+    }
+
+    pub fn paint_outline(&mut self, token: Token, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
+        self.paint_tile(token, Point {
+            x: pnt.x,
+            y: pnt.y
+        })?;
+        
+        self.paint_tile(token, Point {
+            x: pnt.x + shift.gap,
+            y: pnt.y
+        })?;
+        
+        pnt.x += shift.x_shift;
+        pnt.y += shift.y_shift;
+        shift.gap -= shift.x_shift * 2;
+
+        Ok(())
+    }
+
+    pub fn paint_tile(&mut self, token: Token, pnt: Point) -> Result<()> {
+        self.stdout.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
+        Ok(())
+    }
+
+    pub fn paint_rect(&mut self, token: Token, rect: Rect) -> Result<()> {
+        for y in rect.s_pnt.y..rect.e_pnt.y {
+            for x in rect.s_pnt.x..rect.e_pnt.x {
+                self.paint_tile(token, Point{x,y})?;
+            }
+        }
+        Ok(())
+    }
+
+    pub fn flush(&mut self) -> Result<()> {
+        self.stdout.flush()?;
+        Ok(())
+    }
 }

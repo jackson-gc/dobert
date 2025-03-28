@@ -3,12 +3,14 @@ mod utils;
 mod plant;
 
 use rand::Rng;
-use std::io::{self, Write};
-use crossterm::{ExecutableCommand, terminal};
+use crossterm::terminal;
+use crossterm::ExecutableCommand;
 use serde::{Serialize, Deserialize};
+use std::io;
 
 use crate::pot::draw_pot;
 use crate::plant::plant;
+use crate::utils::draw_utils::Renderer;
 
 #[derive(Serialize, Deserialize)]
 pub struct PlantInfo {
@@ -16,25 +18,26 @@ pub struct PlantInfo {
 }
 
 fn main() -> io::Result<()> {
-    let mut trk = io::stdout();
-    trk.execute(terminal::Clear(terminal::ClearType::All))?;
+    let mut renderer = Renderer::new();
+    renderer.stdout_mut().execute(terminal::Clear(terminal::ClearType::All))?;
 
     let mut plant_info = PlantInfo {
         seed: 0
     };
     
-    if let Err(e) = draw_pot(&mut trk) {
+    if let Err(e) = draw_pot(&mut renderer) {
         println!("{:?}", e);
     }
 
-    // 8-digit rng
+    // 8-digit rng - using random_range instead of gen_range
     let seed: u64 = rand::rng().random_range(10_000_000..100_000_000);
     plant_info.seed = seed;
     
-    if let Err(e) = plant(&mut trk, plant_info.seed) {
+    if let Err(e) = plant(&mut renderer, plant_info.seed) {
         println!("{:?}", e);
     }
 
-    trk.flush()?;   
+    renderer.flush()?;
     Ok(())
 }
+
