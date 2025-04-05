@@ -25,17 +25,12 @@ fn main() -> io::Result<()> {
         seed: 0
     };
     
-    if let Err(e) = draw_pot(&mut renderer) {
-        println!("{:?}", e);
-    }
+    draw_pot(&mut renderer)?;
 
-    // 8-digit rng - using random_range instead of gen_range
     let seed: u64 = rand::rng().random_range(10_000_000..100_000_000);
     plant_info.seed = seed;
     
-    if let Err(e) = plant(&mut renderer, plant_info.seed) {
-        println!("{:?}", e);
-    }
+    plant(&mut renderer, plant_info.seed)?;
 
     renderer.flush()?;
     Ok(())

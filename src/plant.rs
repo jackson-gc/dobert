@@ -5,43 +5,31 @@ use crossterm::style::Stylize;
 
 use crate::utils::draw_utils::{Renderer, Point, Token};
 
-const STEM_COUNT:usize = 16;
+const STEM_COUNT:usize = 32;
 
 pub fn plant(renderer: &mut Renderer, seed: u64) -> Result<()> {
-    let window_size = renderer.get_window_ctx();
     let mut rng = ChaCha8Rng::seed_from_u64(seed);
-    let mut all_tips = Vec::<Point>::new();
-    for _ in 0..STEM_COUNT {
-        let tip_pnt = Point {
-            x: rng.random_range(5..window_size.0 - 5),
-            y: rng.random_range(5..(window_size.1 - (window_size.1 / 4)))
-        };
-        all_tips.push(tip_pnt);
-    };
-
-
-    draw_branch(renderer, &mut rng, 16)?;
+    
+    let _all_tips: Vec<Point> = draw_branch(renderer, &mut rng);
     Ok(()) 
 }
 
 
 
-fn draw_branch(renderer: &mut Renderer, rng: &mut ChaCha8Rng, stems: u16) -> Result<()> {
+fn draw_branch(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec::<Point> {
     let window_size = renderer.get_window_ctx();
     let tip_mat: Token = '%'.dark_green();
     
     let mut all_tips = Vec::<Point>::new();
-    for _ in 0..stems {
+    let max_x = window_size.0 - 5;
+    let max_y = window_size.1 - (window_size.1 / 6);
+    for _ in 0..STEM_COUNT {
         let tip_pnt = Point {
-            x: rng.random_range(5..window_size.0 - 5),
-            y: rng.random_range(5..(window_size.1 - (window_size.1 / 4)))
+            x: rng.random_range(5..max_x),
+            y: rng.random_range(5..max_y)
         };
-
-        let _ = renderer.paint_tile(tip_mat, tip_pnt.clone());
+        let _ = renderer.mark_tile(tip_mat, &tip_pnt);
         all_tips.push(tip_pnt);
     };
-    //while let Some(top) = all_tips.pop() {
-    //    println!("{}, {}", top.x, top.y);
-    //}
-    Ok(())
+    all_tips
 }

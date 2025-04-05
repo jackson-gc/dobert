@@ -78,6 +78,11 @@ impl Renderer {
         Ok(())
     }
 
+    pub fn mark_tile(&mut self, token: Token, pnt: &Point) -> Result<()> {
+        self.stdout.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
+        Ok(())
+    }
+
     pub fn paint_rect(&mut self, token: Token, rect: Rect) -> Result<()> {
         for y in rect.s_pnt.y..rect.e_pnt.y {
             for x in rect.s_pnt.x..rect.e_pnt.x {
