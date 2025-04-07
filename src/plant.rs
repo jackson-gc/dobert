@@ -3,21 +3,25 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use crossterm::style::Stylize;
 
-use crate::utils::draw_utils::{Renderer, Point, Token};
+use crate::utils::draw::{Renderer, Point, Token};
 
-const STEM_COUNT:usize = 32;
+const STEM_COUNT:usize = 12;
 
-pub fn plant(renderer: &mut Renderer, seed: u64) -> Result<()> {
-    let mut rng = ChaCha8Rng::seed_from_u64(seed);
-    
-    let _all_tips: Vec<Point> = draw_branch(renderer, &mut rng);
+pub fn plant(renderer: &mut Renderer, rng_seed: u64, nut: &mut Point) -> Result<()> {
+    let mut rng = ChaCha8Rng::seed_from_u64(rng_seed);
+    let window_size = renderer.get_window_ctx();
+
+    nut.x = window_size.0 / 2;
+    nut.y = window_size.1 - (window_size.1 / 8) - 1;
+    renderer.draw_tile('#'.red(), nut)?;
+    let _all_tips: Vec<Point> = draw_branch(renderer, &mut rng, window_size);
     Ok(()) 
 }
 
 
 
-fn draw_branch(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec::<Point> {
-    let window_size = renderer.get_window_ctx();
+fn draw_branch(renderer: &mut Renderer, rng: &mut ChaCha8Rng, window_size: (u16, u16)) -> Vec::<Point> {
+    
     let tip_mat: Token = '%'.dark_green();
     
     let mut all_tips = Vec::<Point>::new();

@@ -9,10 +9,17 @@ use serde::{Deserialize, Serialize};
     
 pub type Token = StyledContent<char>;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Point {
     pub x: u16,
     pub y: u16
+}
+
+
+impl Point {
+    pub fn new() -> Self {
+        Default::default()
+    }
 }
 
 #[derive(Clone)]

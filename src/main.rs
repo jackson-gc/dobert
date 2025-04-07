@@ -10,27 +10,31 @@ use std::io;
 
 use crate::pot::draw_pot;
 use crate::plant::plant;
-use crate::utils::draw_utils::Renderer;
+use crate::utils::draw::Renderer;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct PlantInfo {
-    seed: u64, 
+    seed: u64,
+}
+
+impl PlantInfo {
+    fn new() -> Self {
+        Default::default()
+    }
 }
 
 fn main() -> io::Result<()> {
     let mut renderer = Renderer::new();
+    let mut plant_info = PlantInfo::new();
     renderer.stdout_mut().execute(terminal::Clear(terminal::ClearType::All))?;
-
-    let mut plant_info = PlantInfo {
-        seed: 0
-    };
     
     draw_pot(&mut renderer)?;
-
-    let seed: u64 = rand::rng().random_range(10_000_000..100_000_000);
-    plant_info.seed = seed;
+    if plant_info.seed == 0 {
+        plant_info.seed = rand::rng().random_range(10_000_000..100_000_000);
+    }
     
-    plant(&mut renderer, plant_info.seed)?;
+    let mut nut = utils::draw::Point::new();
+    plant(&mut renderer, plant_info.seed, &mut nut)?;
 
     renderer.flush()?;
     Ok(())
