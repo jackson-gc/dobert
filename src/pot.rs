@@ -1,5 +1,5 @@
 use std::io::{Result, Error, ErrorKind};
-use crossterm::style::{Stylize, StyledContent, Color};
+use crossterm::style::{Stylize, Color};
 use crate::utils::draw_utils::{Token, Point, Rect, Shifter, Renderer, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
 
 pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
@@ -28,7 +28,7 @@ pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
     let clr: Color = Color::Rgb{r: 160, g: 130, b: 90};
     let pot_hard_mat: Token = '█'.with(clr);
 
-    renderer.paint_rect(pot_hard_mat, Rect {
+    renderer.draw_rect(pot_hard_mat, Rect {
         s_pnt: Point {
             x: margin,
             y: depth
@@ -60,7 +60,7 @@ pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
         if i == pot_depth - pot_depth / 4 {
             let end_width = draw_pnt.x + draw_shift.gap;
 
-            renderer.paint_rect(pot_hard_mat, Rect {
+            renderer.draw_rect(pot_hard_mat, Rect {
                 s_pnt: draw_pnt.clone(),
                 e_pnt: Point {
                     x: end_width,
@@ -68,12 +68,12 @@ pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
                 }
             })?;
         }
-        renderer.paint_outline(pot_hard_mat, &mut draw_pnt, &mut draw_shift)?;
+        renderer.draw_outline(pot_hard_mat, &mut draw_pnt, &mut draw_shift)?;
     }
 
     let end_width: u16 = draw_pnt.x + draw_shift.gap + 1;
     let end_length: u16 = draw_pnt.y;
-    renderer.paint_rect(pot_hard_mat, Rect {
+    renderer.draw_rect(pot_hard_mat, Rect {
         s_pnt: draw_pnt,
         e_pnt: Point {
             x: end_width,

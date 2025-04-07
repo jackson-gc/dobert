@@ -55,13 +55,10 @@ impl Renderer {
         }
     }
 
-    pub fn paint_outline(&mut self, token: Token, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
-        self.paint_tile(token, Point {
-            x: pnt.x,
-            y: pnt.y
-        })?;
+    pub fn draw_outline(&mut self, token: Token, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
+        self.draw_tile(token, pnt)?;
         
-        self.paint_tile(token, Point {
+        self.draw_tile(token, &Point {
             x: pnt.x + shift.gap,
             y: pnt.y
         })?;
@@ -73,20 +70,15 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn paint_tile(&mut self, token: Token, pnt: Point) -> Result<()> {
+    pub fn draw_tile(&mut self, token: Token, pnt: &Point) -> Result<()> {
         self.stdout.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
         Ok(())
     }
 
-    pub fn mark_tile(&mut self, token: Token, pnt: &Point) -> Result<()> {
-        self.stdout.queue(cursor::MoveTo(pnt.x, pnt.y))?.queue(style::PrintStyledContent(token))?;
-        Ok(())
-    }
-
-    pub fn paint_rect(&mut self, token: Token, rect: Rect) -> Result<()> {
+    pub fn draw_rect(&mut self, token: Token, rect: Rect) -> Result<()> {
         for y in rect.s_pnt.y..rect.e_pnt.y {
             for x in rect.s_pnt.x..rect.e_pnt.x {
-                self.paint_tile(token, Point{x,y})?;
+                self.draw_tile(token, &Point{x,y})?;
             }
         }
         Ok(())

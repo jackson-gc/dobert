@@ -28,7 +28,7 @@ fn draw_branch(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec::<Point> {
             x: rng.random_range(5..max_x),
             y: rng.random_range(5..max_y)
         };
-        let _ = renderer.mark_tile(tip_mat, &tip_pnt);
+        let _ = renderer.draw_tile(tip_mat, &tip_pnt);
         all_tips.push(tip_pnt);
     };
     all_tips
