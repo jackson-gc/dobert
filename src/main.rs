@@ -6,7 +6,7 @@ use rand::Rng;
 use crossterm::terminal;
 use crossterm::ExecutableCommand;
 use serde::{Serialize, Deserialize};
-use std::io;
+use std::io:Result;
 
 use crate::pot::draw_pot;
 use crate::plant::plant;
@@ -23,7 +23,7 @@ impl PlantInfo {
     }
 }
 
-fn main() -> io::Result<()> {
+fn main() -> Result<()> {
     let mut renderer = Renderer::new();
     let mut plant_info = PlantInfo::new();
     renderer.stdout_mut().execute(terminal::Clear(terminal::ClearType::All))?;
@@ -33,8 +33,10 @@ fn main() -> io::Result<()> {
         plant_info.seed = rand::rng().random_range(10_000_000..100_000_000);
     }
     
-    let mut nut = utils::draw::Point::new();
-    plant(&mut renderer, plant_info.seed, &mut nut)?;
+    let mut nut = Point::new();
+    let plant = Plant::new(plant_info.seed);
+
+    let plant = plant();
 
     renderer.flush()?;
     Ok(())

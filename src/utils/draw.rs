@@ -6,6 +6,7 @@ use crossterm::{
     style::{self, StyledContent},
 };
 use serde::{Deserialize, Serialize};
+use rand_chacha::ChaCha8Rng;
     
 pub type Token = StyledContent<char>;
 
@@ -41,6 +42,7 @@ pub const LIP_SIZE: u16 = 3;
 
 pub struct Renderer {
     stdout: Stdout,
+    pub window_size: (u16, u16)
 }
 
 impl Renderer {
@@ -48,6 +50,10 @@ impl Renderer {
     pub fn new() -> Self {
         Renderer {
             stdout: io::stdout(),
+            window_size: match size() {
+                Ok((w,l)) => (w,l),
+                _ => (0,0)
+            }
         }
     }
 
@@ -55,12 +61,6 @@ impl Renderer {
         &mut self.stdout
     }
 
-    pub fn get_window_ctx(&self) -> (u16, u16) {
-        match size() {
-            Ok((w,l)) => (w,l),
-            _ => (0,0)
-        }
-    }
 
     pub fn draw_outline(&mut self, token: Token, pnt: &mut Point, shift: &mut Shifter) -> Result<()> {
         self.draw_tile(token, pnt)?;

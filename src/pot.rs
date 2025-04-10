@@ -3,7 +3,7 @@ use crossterm::style::{Stylize, Color};
 use crate::utils::draw::{Token, Point, Rect, Shifter, Renderer, MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH, LIP_SIZE};
 
 pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
-    let (window_width, window_length) = renderer.get_window_ctx();
+    let (window_width, window_length) = renderer.window_size;
 
     if window_width < MIN_WINDOW_WIDTH {
         return Err(Error::new(
