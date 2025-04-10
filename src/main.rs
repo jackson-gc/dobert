@@ -2,14 +2,14 @@ mod pot;
 mod utils;
 mod plant;
 
-use rand::Rng;
-use crossterm::terminal;
-use crossterm::ExecutableCommand;
+use rand::{Rng, SeedableRng};
+use crossterm::{terminal, ExecutableCommand};
 use serde::{Serialize, Deserialize};
-use std::io:Result;
+use std::io::Result;
+use rand_chacha::ChaCha8Rng;
 
 use crate::pot::draw_pot;
-use crate::plant::plant;
+use crate::plant::{Plant, pot_the_plant};
 use crate::utils::draw::Renderer;
 
 #[derive(Serialize, Deserialize, Default)]
@@ -32,13 +32,12 @@ fn main() -> Result<()> {
     if plant_info.seed == 0 {
         plant_info.seed = rand::rng().random_range(10_000_000..100_000_000);
     }
-    
-    let mut nut = Point::new();
-    let plant = Plant::new(plant_info.seed);
 
-    let plant = plant();
 
-    renderer.flush()?;
+    let mut plant = Plant::new(ChaCha8Rng::seed_from_u64(plant_info.seed));
+    pot_the_plant(&mut renderer, &mut plant)?;
+
+    renderer.clean()?;
     Ok(())
 }
 

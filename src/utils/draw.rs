@@ -6,7 +6,6 @@ use crossterm::{
     style::{self, StyledContent},
 };
 use serde::{Deserialize, Serialize};
-use rand_chacha::ChaCha8Rng;
     
 pub type Token = StyledContent<char>;
 
@@ -91,7 +90,7 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn flush(&mut self) -> Result<()> {
+    pub fn clean(&mut self) -> Result<()> {
         self.stdout.flush()?;
         Ok(())
     }

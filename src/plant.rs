@@ -1,7 +1,7 @@
-use std::io::Result;
-use rand::{Rng, SeedableRng};
+use rand::Rng;
 use rand_chacha::ChaCha8Rng;
 use crossterm::style::Stylize;
+use std::io::Result;
 
 use crate::utils::draw::{Renderer, Point, Token};
 
@@ -16,8 +16,8 @@ pub struct Plant {
 impl Plant {
     pub fn new(rng: ChaCha8Rng) -> Self {
        Plant {
-            nut: Point::new();,
-            branches: Vec::new();,
+            nut: Point::new(),
+            branches: Vec::new(),
             rng,
         }
     }
@@ -29,19 +29,16 @@ struct Branch {
 }
 
 
-pub fn plant(renderer: &mut Renderer, rng_seed: u64, nut: &mut Point) -> Plant {
-    let mut rng = ChaCha8Rng::seed_from_u64(rng_seed);
-    let plant = Plant::new();
+pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
+    
     let window_size = renderer.window_size;
 
-    nut.x = window_size.0 / 2;
-    nut.y = window_size.1 - (window_size.1 / 8) - 1;
-    match renderer.draw_tile('#'.red(), nut){
-        _ => {}
-    }
-    let _all_tips: Vec<Point> = find_tips(renderer, &mut rng);
+    plant.nut.x = window_size.0 / 2;
+    plant.nut.y = window_size.1 - (window_size.1 / 8) - 1;
+    renderer.draw_tile('#'.red(), &plant.nut)?;
 
-    plant
+    let _all_tips: Vec<Point> = find_tips(renderer, &mut plant.rng);
+    Ok(())
 }
 
 fn draw_branches(renderer: &mut Renderer, rng: &mut ChaCha8Rng){
