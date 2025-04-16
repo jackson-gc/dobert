@@ -5,7 +5,7 @@ use std::io::Result;
 
 use crate::utils::draw::{Point, Renderer, Token};
 
-const STEM_COUNT: usize = 12;
+const STEM_COUNT: usize = 86;
 
 pub struct Plant {
     nut: Point,
@@ -25,6 +25,7 @@ impl Plant {
 
 struct Branch {
     tip: Point,
+    body: Vec<Point>,
 }
 
 pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
@@ -39,7 +40,54 @@ pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
     Ok(())
 }
 
-fn draw_branches(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
+pub fn draw_branches(renderer: &mut Renderer, plant: &Plant) -> Result<()> {
+    for branch in &plant.branches {
+        let x0 = plant.nut.x as i32;
+        let y0 = plant.nut.y as i32;
+        let x1 = branch.tip.x as i32;
+        let y1 = branch.tip.y as i32;
+
+        let steep = (y1 - y0).abs() > (x1 - x0).abs();
+
+        let (mut x0, mut y0, mut x1, mut y1) = if steep {
+            (y0, x0, y1, x1)
+        } else {
+            (x0, y0, x1, y1)
+        };
+
+        if x0 > x1 {
+            std::mem::swap(&mut x0, &mut x1);
+            std::mem::swap(&mut y0, &mut y1);
+        }
+
+        let dx = x1 - x0;
+        let dy = (y1 - y0).abs();
+        let mut err = dx / 2;
+        let mut y = y0;
+        let y_step = if y0 < y1 { 1 } else { -1 };
+
+        for x in x0..=x1 {
+            let tile = if steep {
+                Point {
+                    x: y as u16,
+                    y: x as u16,
+                }
+            } else {
+                Point {
+                    x: x as u16,
+                    y: y as u16,
+                }
+            };
+
+            renderer.draw_tile('@'.green(), &tile)?;
+
+            err -= dy;
+            if err < 0 {
+                y += y_step;
+                err += dx;
+            }
+        }
+    }
     Ok(())
 }
 
@@ -56,7 +104,10 @@ fn gen_branches(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec<Branch> {
             y: rng.random_range(5..max_y),
         };
         let _ = renderer.draw_tile(tip_mat, &tip_pnt);
-        branches.push(Branch { tip: tip_pnt });
+        branches.push(Branch {
+            tip: tip_pnt,
+            body: Vec::new(),
+        });
     }
     branches
 }
