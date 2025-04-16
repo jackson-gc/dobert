@@ -1,21 +1,21 @@
+use crossterm::style::Stylize;
 use rand::Rng;
 use rand_chacha::ChaCha8Rng;
-use crossterm::style::Stylize;
 use std::io::Result;
 
-use crate::utils::draw::{Renderer, Point, Token};
+use crate::utils::draw::{Point, Renderer, Token};
 
-const STEM_COUNT:usize = 12;
+const STEM_COUNT: usize = 12;
 
 pub struct Plant {
     nut: Point,
     rng: ChaCha8Rng,
-    branches: Vec<Branch>
+    branches: Vec<Branch>,
 }
 
 impl Plant {
     pub fn new(rng: ChaCha8Rng) -> Self {
-       Plant {
+        Plant {
             nut: Point::new(),
             branches: Vec::new(),
             rng,
@@ -24,9 +24,8 @@ impl Plant {
 }
 
 struct Branch {
-    tip: Point
+    tip: Point,
 }
-
 
 pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
     let window_size = renderer.window_size;
@@ -36,21 +35,16 @@ pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
     renderer.draw_tile('#'.red(), &plant.nut)?;
 
     plant.branches = gen_branches(renderer, &mut plant.rng);
-    
+
     draw_branches(renderer, plant)?;
     Ok(())
 }
 
 fn draw_branches(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
-    
-
-
-
     Ok(())
 }
 
-
-fn gen_branches(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec::<Branch> {
+fn gen_branches(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec<Branch> {
     let tip_mat: Token = '%'.dark_green();
     let ws = renderer.window_size;
     let mut branches = Vec::<Branch>::new();
@@ -60,10 +54,10 @@ fn gen_branches(renderer: &mut Renderer, rng: &mut ChaCha8Rng) -> Vec::<Branch> 
     for _ in 0..STEM_COUNT {
         let tip_pnt = Point {
             x: rng.random_range(5..max_x),
-            y: rng.random_range(5..max_y)
+            y: rng.random_range(5..max_y),
         };
         let _ = renderer.draw_tile(tip_mat, &tip_pnt);
-        branches.push(Branch{tip: tip_pnt});
-    };
+        branches.push(Branch { tip: tip_pnt });
+    }
     branches
 }
