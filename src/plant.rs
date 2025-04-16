@@ -29,7 +29,6 @@ struct Branch {
 
 pub fn pot_the_plant(renderer: &mut Renderer, plant: &mut Plant) -> Result<()> {
     let window_size = renderer.window_size;
-
     plant.nut.x = window_size.0 / 2;
     plant.nut.y = window_size.1 - (window_size.1 / 8) - 1;
     renderer.draw_tile('#'.red(), &plant.nut)?;
