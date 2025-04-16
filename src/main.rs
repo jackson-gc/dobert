@@ -30,6 +30,8 @@ fn main() -> Result<()> {
         .stdout_mut()
         .execute(terminal::Clear(terminal::ClearType::All))?;
 
+    plant_info.seed = 58008;
+
     draw_pot(&mut renderer)?;
     if plant_info.seed == 0 {
         plant_info.seed = rand::rng().random_range(10_000_000..100_000_000);

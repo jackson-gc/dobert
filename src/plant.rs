@@ -1,11 +1,11 @@
-use crossterm::style::Stylize;
+use crossterm::style::{Color, Stylize};
 use rand::Rng;
 use rand_chacha::ChaCha8Rng;
 use std::io::Result;
 
 use crate::utils::draw::{Point, Renderer, Token};
 
-const STEM_COUNT: usize = 86;
+const STEM_COUNT: usize = 2;
 
 pub struct Plant {
     nut: Point,
@@ -79,7 +79,14 @@ pub fn draw_branches(renderer: &mut Renderer, plant: &Plant) -> Result<()> {
                 }
             };
 
-            renderer.draw_tile('@'.green(), &tile)?;
+            renderer.draw_tile(
+                '🦀'.with(Color::Rgb {
+                    r: 140,
+                    g: 110,
+                    b: 50,
+                }),
+                &tile,
+            )?;
 
             err -= dy;
             if err < 0 {

@@ -31,9 +31,9 @@ pub fn draw_pot(renderer: &mut Renderer) -> Result<()> {
     let depth: u16 = window_length - pot_depth;
 
     let clr: Color = Color::Rgb {
-        r: 160,
-        g: 130,
-        b: 90,
+        r: 100,
+        g: 80,
+        b: 50,
     };
     let pot_hard_mat: Token = '█'.with(clr);
 
